@@ -51,6 +51,19 @@ export const actualizarUsuarioGoogle = async (req, res) => {
   }
 };
 
+export const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await UsuarioService.update(Number(id), req.body);
+    if (!response) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.json({ message: "Datos editados correctamente" });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+};
+
 export const login = async (req, res) => {
   try {
     const data = req.body;

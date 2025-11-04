@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
     dialectOptions: {
       options: {
         port: parseInt(process.env.DB_PORT, 10),
-        encrypt: false,
+        encrypt: true,
         trustServerCertificate: true,
         useUTC: false,
       },

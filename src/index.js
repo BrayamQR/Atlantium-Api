@@ -34,22 +34,20 @@ import { seedMenuByPerfil } from "./seeds/permisos.seed.js";
 import "./jobs/chat.job.js";
 
 const port = process.env.PORT ?? 3000;
-const FRONTEND_URL = (process.env.FRONTEND_URL || "http://localhost:4200")
-  .split(",")
-  .map((url) => url.trim());
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:4200";
 const app = express();
 const server = createServer(app);
 
 app.use(
   cors({
-    origin: [FRONTEND_URL],
+    origin: FRONTEND_URL,
     credentials: true,
   })
 );
 
 const io = new Server(server, {
   cors: {
-    origin: [FRONTEND_URL],
+    origin: FRONTEND_URL,
     credentials: true,
   },
 });

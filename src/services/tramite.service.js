@@ -463,9 +463,28 @@ export const historialCambios = async (id) => {
       historial.push(
         new HistorialDTO({
           tipoEvento: "Pago asignado",
-          descripcion: `Se generó un pago por S/. ${montoFormateado}. Detalle: "${tramite.pago.descPago}"`,
+          descripcion: `Se generó un pago por S/. ${montoFormateado}. Detalle: "${
+            tramite.pago.descPago || "No detallado"
+          }"`,
           fecha: tramite.pago.fechaCreacion,
           usuario: "Administrador",
+        })
+      );
+    }
+
+    if (tramite.pago && tramite.pago.idEstadoPago !== 1) {
+      const montoFormateado = tramite.pago.montoPago.toFixed(2);
+      const nombreUsuario =
+        tramite.usuario?.personaJuridica?.razonSocial ||
+        tramite.usuario?.personaNatural?.nomPersona ||
+        tramite.usuario?.emailUsuario ||
+        "usuario desconocido";
+      historial.push(
+        new HistorialDTO({
+          tipoEvento: "Pago realizado",
+          descripcion: `Se realizo el pago de S/. ${montoFormateado} exitosamente`,
+          fecha: tramite.pago.fechaPago,
+          usuario: nombreUsuario,
         })
       );
     }

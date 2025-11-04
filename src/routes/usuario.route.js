@@ -213,6 +213,17 @@ router.post(
 );
 
 router.put(
+  "/:id",
+  param("id").isInt({ gt: 0 }).withMessage("ID inválido"),
+  body("emailUsuario")
+    .optional({ checkFalsy: true })
+    .isEmail()
+    .withMessage("Debe ser un email válido"),
+  handleErrors,
+  UsuarioController.update
+);
+
+router.put(
   "/:id/update-usergoogle",
   uploadArchivosMemory.single("portafolio"),
   param("id").isInt({ gt: 0 }).withMessage("ID invalido"),

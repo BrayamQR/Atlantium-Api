@@ -25,3 +25,21 @@ export const remove = async (req, res) => {
     handleControllerError(res, error);
   }
 };
+
+export const createPortaforio = async (req, res) => {
+  try {
+    const portafolio = req.file;
+    const response = await ArchivoService.createPortafolio(
+      req.body,
+      portafolio
+    );
+    if (!response) {
+      return res
+        .status(404)
+        .json({ message: "Archivo no encontrado o ya eliminado" });
+    }
+    res.json({ message: "Archivo agregado exitosamente" });
+  } catch (error) {
+    handleControllerError(res, error);
+  }
+};

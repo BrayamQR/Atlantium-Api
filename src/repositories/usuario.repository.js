@@ -97,6 +97,8 @@ export const get = async (id) => {
       },
       {
         model: PersonaNaturalModel,
+        where: { vigenciaPerNatural: true },
+        required: false,
         as: "personaNatural",
         include: [
           {
@@ -117,20 +119,28 @@ export const get = async (id) => {
           },
           {
             model: ArchivoModel,
+            where: { vigenciaArchivo: true },
+            required: false,
             as: "archivo",
           },
         ],
       },
       {
         model: PersonaJuridicaModel,
+        where: { vigenciaPersonaJuridica: true },
+        required: false,
         as: "personaJuridica",
         include: [
           {
             model: RepresentanteLegalModel,
+            where: { vigenciaRepresentanteLegal: true },
+            required: false,
             as: "representanteLegal",
           },
           {
             model: TipoSociedadModel,
+            where: { vigenciaTipoSociedad: true },
+            required: false,
             as: "tipoSociedad",
           },
           {
@@ -168,6 +178,8 @@ export const findByEmail = async (emailUsuario) => {
       },
       {
         model: PersonaNaturalModel,
+        where: { vigenciaPerNatural: true },
+        required: false,
         as: "personaNatural",
         include: [
           {
@@ -188,21 +200,45 @@ export const findByEmail = async (emailUsuario) => {
           },
           {
             model: ArchivoModel,
+            where: { vigenciaArchivo: true },
+            required: false,
             as: "archivo",
           },
         ],
       },
       {
         model: PersonaJuridicaModel,
+        where: { vigenciaPersonaJuridica: true },
+        required: false,
         as: "personaJuridica",
         include: [
           {
             model: RepresentanteLegalModel,
+            where: { vigenciaRepresentanteLegal: true },
+            required: false,
             as: "representanteLegal",
           },
           {
             model: TipoSociedadModel,
+            where: { vigenciaTipoSociedad: true },
+            required: false,
             as: "tipoSociedad",
+          },
+          {
+            model: DistritoModel,
+            as: "distrito",
+            include: [
+              {
+                model: ProvinciaModel,
+                as: "provincia",
+                include: [
+                  {
+                    model: DepartamentoModel,
+                    as: "departamento",
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -224,6 +260,8 @@ export const findByNroIdent = async (nroIdentificacion) => {
       },
       {
         model: PersonaNaturalModel,
+        where: { vigenciaPerNatural: true },
+        required: false,
         as: "personaNatural",
         include: [
           {
@@ -244,20 +282,28 @@ export const findByNroIdent = async (nroIdentificacion) => {
           },
           {
             model: ArchivoModel,
+            where: { vigenciaArchivo: true },
+            required: false,
             as: "archivo",
           },
         ],
       },
       {
         model: PersonaJuridicaModel,
+        where: { vigenciaPersonaJuridica: true },
+        required: false,
         as: "personaJuridica",
         include: [
           {
             model: RepresentanteLegalModel,
+            where: { vigenciaRepresentanteLegal: true },
+            required: false,
             as: "representanteLegal",
           },
           {
             model: TipoSociedadModel,
+            where: { vigenciaTipoSociedad: true },
+            required: false,
             as: "tipoSociedad",
           },
           {
@@ -306,6 +352,8 @@ export const usuariosByPerfil = async (id) => {
       },
       {
         model: PersonaNaturalModel,
+        where: { vigenciaPerNatural: true },
+        required: false,
         as: "personaNatural",
         include: [
           {
@@ -326,20 +374,28 @@ export const usuariosByPerfil = async (id) => {
           },
           {
             model: ArchivoModel,
+            where: { vigenciaArchivo: true },
+            required: false,
             as: "archivo",
           },
         ],
       },
       {
         model: PersonaJuridicaModel,
+        where: { vigenciaPersonaJuridica: true },
+        required: false,
         as: "personaJuridica",
         include: [
           {
             model: RepresentanteLegalModel,
+            where: { vigenciaRepresentanteLegal: true },
+            required: false,
             as: "representanteLegal",
           },
           {
             model: TipoSociedadModel,
+            where: { vigenciaTipoSociedad: true },
+            required: false,
             as: "tipoSociedad",
           },
           {

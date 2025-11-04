@@ -55,12 +55,12 @@ export const findAllState = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const { id } = req.param;
+    const { id } = req.params;
     const pago = await PagoService.update(Number(id), req.body);
     if (!pago) {
       return res.status(404).json({ message: "pago no encontrado" });
     }
-    res.json(perfil);
+    res.json(pago);
   } catch (error) {
     handleControllerError(res, error);
   }

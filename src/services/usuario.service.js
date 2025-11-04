@@ -94,6 +94,8 @@ export const create = async (data, portafolio) => {
       data.cargoRepresentante = stringFormat.capitalizeAuto(
         data.cargoRepresentante
       );
+    if (data.webEmpresarial)
+      data.webEmpresarial = stringFormat.toLowerCaseText(data.webEmpresarial);
 
     data.idTipoPersona = parseInt(data.idTipoPersona, 10);
     data.idPerfil = data.idPerfil ? parseInt(data.idPerfil, 10) : null;
@@ -113,7 +115,7 @@ export const create = async (data, portafolio) => {
       );
       if (docIdentExist) {
         throw new ValidationError(
-          "El numero de indentificación ya esta registrado",
+          "El DNI ya esta registrado",
           ERROR_CODES.NRO_IDENT_EXISTS
         );
       }
@@ -252,6 +254,85 @@ export const create = async (data, portafolio) => {
     if (archivoGuardado) {
       deleteArchivoFromDisk(archivoGuardado.rutaArchivo);
     }
+    throw error;
+  }
+};
+
+export const update = async (id, data) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    data = sanitizeData(data);
+
+    if (data.emailUsuario)
+      data.emailUsuario = stringFormat.toLowerCaseText(data.emailUsuario);
+
+    if (data.passwordUsuario)
+      data.passwordUsuario = stringFormat.toLowerCaseText(data.passwordUsuario);
+    if (data.passwordActual)
+      data.passwordActual = stringFormat.toLowerCaseText(data.passwordActual);
+
+    const usuario = await UsuarioRepository.get(id);
+
+    if (!usuario) {
+      throw new ValidationError(
+        "Usuario no encontrado",
+        ERROR_CODES.USER_NOT_FOUND
+      );
+    }
+    if (data.emailUsuario && usuario.emailUsuario !== data.emailUsuario) {
+      const emailExists = await UsuarioRepository.findByEmail(
+        data.emailUsuario
+      );
+
+      if (emailExists) {
+        throw new ValidationError(
+          "El email ya esta registrado",
+          ERROR_CODES.EMAIL_EXISTS
+        );
+      }
+
+      const dataUsuario = {
+        emailUsuario: data.emailUsuario,
+        emailVerificado: false,
+        googleId: null,
+      };
+      await UsuarioRepository.update(id, dataUsuario, { transaction });
+    }
+
+    if (data.passwordUsuario) {
+      if (!data.passwordActual) {
+        throw new ValidationError(
+          "Se requiere contraseña actual",
+          ERROR_CODES.INVALID_PASSWORD
+        );
+      }
+
+      const passwordValid = await bcrypt.compare(
+        data.passwordActual,
+        usuario.passwordUsuario
+      );
+
+      if (!passwordValid) {
+        throw new ValidationError(
+          "Contraseña incorrecta",
+          ERROR_CODES.INVALID_PASSWORD
+        );
+      }
+
+      const hashedPassword = await bcrypt.hash(data.passwordUsuario, 10);
+
+      const dataUsuario = {
+        passwordUsuario: hashedPassword,
+      };
+
+      await UsuarioRepository.update(id, dataUsuario, { transaction });
+    }
+
+    await transaction.commit();
+    return true;
+  } catch (error) {
+    await transaction.rollback();
     throw error;
   }
 };
@@ -464,6 +545,14 @@ export const login = async (data) => {
       ERROR_CODES.USER_NOT_FOUND
     );
   }
+
+  if (!usuario.estadoUsuario) {
+    throw new ValidationError(
+      "El usuario deshabilitado, comuniquese con soporte técnico.",
+      ERROR_CODES.DISABLED_USER
+    );
+  }
+
   const passwordValid = await bcrypt.compare(
     data.passwordUsuario,
     usuario.passwordUsuario

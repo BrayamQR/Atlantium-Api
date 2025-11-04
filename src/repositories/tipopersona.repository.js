@@ -3,6 +3,10 @@ import PersonaJuridicaModel from "../models/persona_juridica.model.js";
 import RepresentanteLegalModel from "../models/representante_legal.model.js";
 import UsuarioModel from "../models/usuario.model.js";
 import PersonaJuridica from "../models/persona_juridica.model.js";
+import DistritoModel from "../models/distrito.model.js";
+import ProvinciaModel from "../models/provincia.model.js";
+import DepartamentoModel from "../models/departamento.model.js";
+import TipoSociedadModel from "../models/tiposociedad.model.js";
 
 export const listPN = async () => {
   return PersonaNaturalModel.findAll({
@@ -27,26 +31,67 @@ export const getPNByIdUsuario = async (id) => {
   });
 };
 
-export const getPN = async (id) => {
-  return PersonaNaturalModel.findOne({
-    where: { idUsuario: id, vigenciaPerNatural: true },
-    include: [
-      {
-        model: UsuarioModel,
-      },
-    ],
-  });
-};
-
 export const getPJByIdUsuario = async (id) => {
   return PersonaJuridicaModel.findOne({
     where: { idUsuario: id, vigenciaPersonaJuridica: true },
   });
 };
-
+export const getPN = async (id) => {
+  return PersonaNaturalModel.findOne({
+    where: { idPersonaNatural: id, vigenciaPerNatural: true },
+    include: [
+      {
+        model: DistritoModel,
+        as: "distrito",
+        include: [
+          {
+            model: ProvinciaModel,
+            as: "provincia",
+            include: [
+              {
+                model: DepartamentoModel,
+                as: "departamento",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+};
 export const getPJ = async (id) => {
   return PersonaJuridicaModel.findOne({
     where: { idPersonaJuridica: id, vigenciaPersonaJuridica: true },
+    include: [
+      {
+        model: TipoSociedadModel,
+        where: { vigenciaTipoSociedad: true },
+        required: false,
+        as: "tipoSociedad",
+      },
+      {
+        model: DistritoModel,
+        as: "distrito",
+        include: [
+          {
+            model: ProvinciaModel,
+            as: "provincia",
+            include: [
+              {
+                model: DepartamentoModel,
+                as: "departamento",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+};
+
+export const getRL = async (id) => {
+  return RepresentanteLegalModel.findOne({
+    where: { idRepresentante: id, vigenciaRepresentanteLegal: true },
   });
 };
 
@@ -88,6 +133,16 @@ export const findPJByRucPersonaJuridica = async (rucPersonaJuridica) => {
     where: {
       vigenciaPersonaJuridica: true,
       rucPersonaJuridica: rucPersonaJuridica,
+    },
+  });
+  return persona || null;
+};
+
+export const findPJByDniRepresentanteLegal = async (docIdentidad) => {
+  const persona = await RepresentanteLegalModel.findOne({
+    where: {
+      docIdentidad: docIdentidad,
+      vigenciaRepresentanteLegal: true,
     },
   });
   return persona || null;
